@@ -45,8 +45,8 @@ export interface IUser {
     email: string;
     name_company: string;
     number_phone: string;
-    type: string;
-    role: string;
+    types: string;
+    roles: string;
 }
 
 export const UserSchema = new mongoose.Schema({
@@ -60,6 +60,6 @@ export const UserSchema = new mongoose.Schema({
         type: String, default: null
     },
     number_phone: { type: String, default: null },
-    type: { type: String, required: true },
-    role: { type: String, required: true },
+    types: { type: String, required: true },
+    roles: { type: String, required: true },
 }, { _id: true, timestamps: true });

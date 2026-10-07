@@ -1,4 +1,4 @@
-export interface OtpInputDto {
+export interface IOtpInputDto {
     email: string;
     otp: string;
     role: string;

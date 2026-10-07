@@ -3,6 +3,7 @@ import type AuthUsecase from "../../../usecase/auth_usecase.js";
 import { type Request, type Response } from "express";
 import { AuthModel } from "../../../domain/entities/auth.js";
 import type SignOutUsecase from "../../../usecase/sign_out_usercase.js";
+import type { ILogoutInputDTO } from "../../../domain/dtos/logout-input.js";
 
 
 const OTPAction = z.enum(['Register', 'Login', 'ResetPassword']);
@@ -14,17 +15,22 @@ const AuthModelSchema = z.object({
 
 type IAuthModel = z.infer<typeof AuthModelSchema>;
 
+const LogOutModelSchema: z.ZodType<ILogoutInputDTO> = z.object({
+    token: z.string(),
+    role: z.string()
+}).strict();
+
 export default class AuthController {
     private readonly authUsecase: AuthUsecase;
     private readonly signoutUsecase: SignOutUsecase;
-    
+
     constructor(authUsecase: AuthUsecase, signoutUsecase: SignOutUsecase) {
         this.authUsecase = authUsecase, this.signoutUsecase = signoutUsecase
     }
 
     public async signOut(req: Request, res: Response) {
-        const { user_id } = req.body;
-        const result = await this.signoutUsecase.execute(user_id);
+        const safeLogOutData = LogOutModelSchema.parse(req.body);
+        const result = await this.signoutUsecase.execute(safeLogOutData);
 
         return res.status(result.status).json({ data: { success: result.success, message: result.message } });
     }

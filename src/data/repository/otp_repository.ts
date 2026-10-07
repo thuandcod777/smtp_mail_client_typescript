@@ -1,6 +1,7 @@
 import type { ClientSession, Mongoose } from "mongoose";
 import type IOtpRepository from "../../domain/services/iotp_repository.js";
 import { OtpSchema, type IOtp } from "../model/otp_model.js";
+import { AuthSchema, type IAuthSession } from "../model/auth_model.js";
 
 export default class OtpRepository implements IOtpRepository {
     constructor(private readonly client: Mongoose) { }
@@ -20,7 +21,7 @@ export default class OtpRepository implements IOtpRepository {
 
     }
 
-    public async verifyOtp(otp: string, session?: ClientSession): Promise<{ success: boolean, id: string, message: string }> {
+    public async verifyOtp(otp: string, session?: ClientSession): Promise<{ success: boolean, id: string | null, message: string }> {
         const otpModel = this.client.model<IOtp>('Otp', OtpSchema);
 
         const otpQuery = otpModel.findOne({ otp: otp });
@@ -32,7 +33,7 @@ export default class OtpRepository implements IOtpRepository {
         const isVerified = await otpQuery.lean();
 
         if (!isVerified) {
-            return { success: false, id: "", message: "Mã otp chưa được tạo." };
+            return { success: false, id: null, message: "Mã OTP không chính xác." };
         }
 
         return { success: true, id: isVerified._id.toString(), message: "Xác thực mã otp thành công." }
@@ -65,5 +66,15 @@ export default class OtpRepository implements IOtpRepository {
         return { success: true, message: "Xóa mã otp thành công." };
     }
 
+    public async logout(user_id: string): Promise<{ success: boolean, message: string }> {
+        const sessionModel = this.client.model<IAuthSession>('Session', AuthSchema);
+        await sessionModel.updateOne({ user_id: user_id }, {
+            $set: {
+                is_active: false
+            }
+        })
+
+        return { success: true, message: "Đăng xuất thành công." };
+    }
 
 }

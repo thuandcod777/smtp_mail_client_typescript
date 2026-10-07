@@ -1,6 +1,6 @@
 import type IOtpRepository from "../domain/services/iotp_repository.js";
 import { ResponseDto } from "../domain/dtos/response.js";
-import type { OtpInputDto } from "../domain/dtos/otp-input.dto.js";
+import type { IOtpInputDto } from "../domain/dtos/otp-input.dto.js";
 import type IRedisService from "../domain/services/iredis_repository.js";
 import type IAuthRepository from "../domain/services/iauth_repository.js";
 import { TransactionFailure } from "../domain/error/transaction-failure.js";
@@ -11,7 +11,7 @@ import jwt from "jsonwebtoken"
 export default class VerifyOtpUsecase {
     constructor(private authRepository: IAuthRepository, private otpRepository: IOtpRepository, private redisService: IRedisService) { }
 
-    public async execute(data: OtpInputDto): Promise<ResponseDto> {
+    public async execute(data: IOtpInputDto): Promise<ResponseDto> {
 
         let token: string = "";
 
@@ -122,7 +122,6 @@ export default class VerifyOtpUsecase {
                 }
             }
 
-
             await session.commitTransaction();
             console.log('[VerifyOtpUsecase] Transaction completed successfully');
             return ResponseDto.success(isOtpChecked.message, token);
@@ -136,8 +135,7 @@ export default class VerifyOtpUsecase {
             }
             const errorMessage = transactionError?.message || "Đã có lỗi xảy ra hệ thống. Vui lòng thử lại sau.";
             return ResponseDto.failure(errorMessage);
-        }
-        finally {
+        } finally {
             console.log('[VerifyOtpUsecase] Ending session');
             await session.endSession();
         }

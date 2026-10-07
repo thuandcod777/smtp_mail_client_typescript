@@ -3,6 +3,6 @@ export interface IUserInputDTO {
     email: string;
     name_company: string | null;
     number_phone: string | null;
-    type: string;
-    role: string;
+    types: string;
+    roles: string;
 }

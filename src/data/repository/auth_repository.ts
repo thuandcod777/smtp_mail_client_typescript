@@ -35,8 +35,8 @@ export default class AuthRepository implements IAuthRepository {
             name_company: user.name_company ?? null,
             email: user.email ?? null,
             number_phone: user.number_phone ?? null,
-            type: user.type,
-            role: user.role
+            types: user.types,
+            roles: user.roles
         });
 
 
@@ -68,8 +68,8 @@ export default class AuthRepository implements IAuthRepository {
             email: userData.email,
             name_company: userData.name_company ?? null,
             number_phone: userData.number_phone ?? null,
-            type: userData.type,
-            role: userData.role,
+            types: userData.types,
+            roles: userData.roles,
         });
 
         await userQuery.save({ session: session ? session : null });
@@ -80,8 +80,8 @@ export default class AuthRepository implements IAuthRepository {
             email: userQuery.email, // Đã sửa lỗi: trước đó bạn gán lầm userQuery.name vào email
             name_company: userQuery.name_company,
             number_phone: userQuery.number_phone,
-            type: userQuery.type,
-            role: userQuery.role
+            types: userQuery.types,
+            roles: userQuery.roles
         };
 
         return {
@@ -225,8 +225,7 @@ export default class AuthRepository implements IAuthRepository {
         return AuthModel.fromJson(raw);
     }
 
-
-    public async signOut(userId: string, session?: ClientSession): Promise<{ sucess: boolean; message: string; }> {
+    public async signOut(token: string, role: string): Promise<{ sucess: boolean; message: string; }> {
         const sessionModel = this.client.model<IAuthSession>("Session", AuthSchema);
 
 
@@ -238,17 +237,24 @@ export default class AuthRepository implements IAuthRepository {
             updateOptions.session = session;
         } */
 
-        const sessionQuery = await sessionModel.findOneAndUpdate({ "user_id": userId }, {
+        let data = {};
+
+        if (role === 'client') {
+            data = { access_token: token };
+        } else if (role === 'cooperative') {
+            data = { refresh_token: token };
+        }
+
+        const sessionQuery = await sessionModel.findOneAndUpdate(data, {
             $set: {
                 "is_active": false
             }
         }, updateOptions);
 
         if (!sessionQuery) {
-            return { sucess: false, message: "Loi dang xuat" };
+            return { sucess: false, message: "Lỗi đăng xuất." };
         }
 
-
-        return { sucess: true, message: "Dang xuat thanh cong." };
+        return { sucess: true, message: "Đăng xuất thành công." };
     }
 }

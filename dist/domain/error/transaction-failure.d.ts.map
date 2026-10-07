@@ -1,0 +1,1 @@
+{"version":3,"file":"transaction-failure.d.ts","sourceRoot":"","sources":["../../../src/domain/error/transaction-failure.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,WAAW,EAAE,MAAM,qBAAqB,CAAC;AAEvD,qBAAa,kBAAmB,SAAQ,KAAK;aACb,QAAQ,EAAE,WAAW;gBAArB,QAAQ,EAAE,WAAW;CAOpD"}

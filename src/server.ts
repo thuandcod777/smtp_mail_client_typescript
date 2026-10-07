@@ -5,13 +5,13 @@ import CompositisionRoot from './composition.js';
 dotenv.config()
 CompositisionRoot.configure()
 
-const PORT = process.env.PORT || 3000;
+const PORT = 8080;
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
-app.use('/api/v2', CompositisionRoot.otpRouter(),)
+app.use('/api/v2/auth', CompositisionRoot.otpRouter(),)
 app.use('/api/v2', CompositisionRoot.authRouter())
 
 

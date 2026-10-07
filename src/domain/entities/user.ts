@@ -7,8 +7,8 @@ export interface IUserJSON {
     email: string;
     name_company?: string | null;
     number_phone?: string | null;
-    type: string;
-    role: string;
+    types: string;
+    roles: string;
 }
 
 export default class User {
@@ -17,17 +17,17 @@ export default class User {
     readonly email: string;
     readonly name_company?: string | null;
     readonly number_phone?: string | null;
-    readonly type: string;
-    readonly role: string;
+    readonly types: string;
+    readonly roles: string;
 
-    constructor({ _id = null, name = null, email, name_company = null, number_phone = null, type, role }: IUserJSON) {
+    constructor({ _id = null, name = null, email, name_company = null, number_phone = null, types, roles }: IUserJSON) {
         this._id = _id;
         this.name = name;
         this.email = email;
         this.name_company = name_company;
         this.number_phone = number_phone;
-        this.type = type;
-        this.role = role;
+        this.types = types;
+        this.roles = roles;
     }
 
     static fromJson(json: IUserJSON): User {

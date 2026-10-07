@@ -18,14 +18,14 @@ export default class SaveOtpUsecase {
         let otp = '';
         const uuid: string = uuidv4();
 
-        if (userData.role === 'cooperative') {
+        if (userData.roles === 'cooperative') {
             otp = generateRandomString(12);
-        } else if (userData.role === 'client') {
+        } else if (userData.roles === 'client') {
             otp = generateRandomString(6);
 
         }
 
-        console.log('[SaveOtpUsecase] OTP generated', { role: userData.role, otpLength: otp.length, email: userData.email });
+        console.log('[SaveOtpUsecase] OTP generated', { role: userData.roles, otpLength: otp.length, email: userData.email });
 
         const session = await this.authRepository.startSession();
         session.startTransaction();
@@ -39,7 +39,7 @@ export default class SaveOtpUsecase {
 
             // Kiểm tra thành công và đảm bảo có dữ liệu người dùng
             if (isUserChecked.success && isUserChecked.userData) {
-                if (userData.role === 'client') {
+                if (userData.roles === 'client') {
                     console.log('[SaveOtpUsecase] Checking existing user session');
                     const isSessionChecked = await this.authRepository.checkUserSession(isUserChecked.userData._id!.toString(), session);
 
@@ -174,9 +174,9 @@ export default class SaveOtpUsecase {
             console.log('[SaveOtpUsecase] OTP saved');
 
 
-            console.log(`[SaveOtpUsecase] Processing role: ${userData.role}`);
+            console.log(`[SaveOtpUsecase] Processing role: ${userData.roles}`);
 
-            switch (userData.role) {
+            switch (userData.roles) {
                 case 'cooperative': {
                     console.log('[SaveOtpUsecase] Generating refresh token for cooperative');
                     const refreshToken = this.tokenService.generateRefreshToken(uuid);
