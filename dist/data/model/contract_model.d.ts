@@ -82,9 +82,9 @@ export declare const ContractDetailSchema: mongoose.Schema<any, mongoose.Model<a
     _id: Types.ObjectId;
 } & {
     __v: number;
-}, "id"> & {
+}, "id"> & mongoose.HydratedDocumentOverrides<{
     id: string;
-}, unknown, {
+}>, unknown, {
     number_contract: string;
     name_client_a: string;
     name_business_owner_b: string;
@@ -200,9 +200,9 @@ export declare const ContractSchema: mongoose.Schema<any, mongoose.Model<any, an
     _id: Types.ObjectId;
 } & {
     __v: number;
-}, "id"> & {
+}, "id"> & mongoose.HydratedDocumentOverrides<{
     id: string;
-}, unknown, {
+}>, unknown, {
     user_id: Types.ObjectId;
     is_success: boolean;
     contract_details?: {

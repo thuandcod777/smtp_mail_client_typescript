@@ -1,8 +1,9 @@
 import { Router, type Request, type Response } from "express";
-import AuthUsecase from "../../../usecase/auth_usecase.js";
+import AuthUsecase from "../../../usecase/google_login_usecase.js";
 import type IAuthRepository from "../../../domain/services/iauth_repository.js";
 import AuthController from "./auth_controller.js";
-import SignOutUsecase from "../../../usecase/sign_out_usercase.js";
+import LogoutUsecase from "../../../usecase/logout_out_usercase.js";
+import SaveUserGoogleUsecase from "../../../usecase/google_login_usecase.js";
 
 export default class AuthRouter {
     public static configure(authRepository: IAuthRepository): Router {
@@ -10,16 +11,16 @@ export default class AuthRouter {
 
         let controller = AuthRouter.composeController(authRepository);
 
-        router.post('/login', (req: Request, res: Response) => controller.save_audit_login_log(req, res));
-        router.post('/signout', (req: Request, res: Response) => controller.signOut(req, res));
+        router.post('/verifiygoogle', (req: Request, res: Response) => controller.saveUserGoogle(req, res));
+        router.post('/logout', (req: Request, res: Response) => controller.logOut(req, res));
 
         return router;
     }
 
     private static composeController(authRepository: IAuthRepository): AuthController {
-        const saveAuthUsecase = new AuthUsecase(authRepository);
-        const signOutUsecase = new SignOutUsecase(authRepository);
-        const controller = new AuthController(saveAuthUsecase, signOutUsecase);
+        const saveUserGoogleUsecase = new SaveUserGoogleUsecase(authRepository);
+        const logOutUsecase = new LogoutUsecase(authRepository);
+        const controller = new AuthController(saveUserGoogleUsecase, logOutUsecase);
         return controller;
     }
 }

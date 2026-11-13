@@ -1,8 +1,9 @@
 export interface IUserInputDTO {
-    name: string | null;
     email: string;
-    name_company: string | null;
-    number_phone: string | null;
-    types: string;
-    roles: string;
+    user_name?: string | null;
+    company_name?: string | null;
+    number_phone?: string | null;
+    is_type: string;
+    is_role: string;
+    is_login: string;
 }

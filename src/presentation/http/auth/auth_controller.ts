@@ -1,12 +1,20 @@
-import { success, z } from "zod";
-import type AuthUsecase from "../../../usecase/auth_usecase.js";
+import { z } from "zod";
 import { type Request, type Response } from "express";
 import { AuthModel } from "../../../domain/entities/auth.js";
-import type SignOutUsecase from "../../../usecase/sign_out_usercase.js";
 import type { ILogoutInputDTO } from "../../../domain/dtos/logout-input.js";
-
+import type { IUserInputDTO } from "../../../domain/dtos/user-input.dto.js";
+import type GoogleLoginUsecase from "../../../usecase/google_login_usecase.js";
+import type LogOutUsecase from "../../../usecase/logout_out_usercase.js";
+import type SaveUserGoogleUsecase from "../../../usecase/google_login_usecase.js";
 
 const OTPAction = z.enum(['Register', 'Login', 'ResetPassword']);
+
+const UserSchema: z.ZodType<IUserInputDTO> = z.object({
+    email: z.string(),
+    is_type: z.string(),
+    is_role: z.string(),
+    is_login: z.string()
+}).strict();
 
 const AuthModelSchema = z.object({
     email: z.string(),
@@ -17,20 +25,28 @@ type IAuthModel = z.infer<typeof AuthModelSchema>;
 
 const LogOutModelSchema: z.ZodType<ILogoutInputDTO> = z.object({
     token: z.string(),
-    role: z.string()
 }).strict();
 
 export default class AuthController {
-    private readonly authUsecase: AuthUsecase;
-    private readonly signoutUsecase: SignOutUsecase;
+    private readonly saveUserGoogleUsecase: SaveUserGoogleUsecase;
+    private readonly logOutUsecase: LogOutUsecase;
 
-    constructor(authUsecase: AuthUsecase, signoutUsecase: SignOutUsecase) {
-        this.authUsecase = authUsecase, this.signoutUsecase = signoutUsecase
+    constructor(saveUserGoogleUsecase: SaveUserGoogleUsecase, logOutUsecase: LogOutUsecase) {
+        this.saveUserGoogleUsecase = saveUserGoogleUsecase, this.logOutUsecase = logOutUsecase
     }
 
-    public async signOut(req: Request, res: Response) {
+    public async saveUserGoogle(req: Request, res: Response) {
+        const safeUserData = UserSchema.parse(req.body);
+
+        const result = await this.saveUserGoogleUsecase.execute(safeUserData);
+
+        return res.status(result.status).json({ data: { user: result.data, success: result.success, message: result.message } });
+    }
+
+    public async logOut(req: Request, res: Response) {
         const safeLogOutData = LogOutModelSchema.parse(req.body);
-        const result = await this.signoutUsecase.execute(safeLogOutData);
+
+        const result = await this.logOutUsecase.execute(safeLogOutData);
 
         return res.status(result.status).json({ data: { success: result.success, message: result.message } });
     }
@@ -57,8 +73,8 @@ export default class AuthController {
             action: 'Login'
         });
 
-        const isSuccess = await this.authUsecase.execute(authData);
+        /* const isSuccess = await this.authUsecase.execute(authData); */
 
-        return res.status(200).json({ data: { isSuccess: isSuccess, status: "Gửi thành công" } })
+        return res.status(200).json({ data: { isSuccess: true, status: "Gửi thành công" } })
     }
 }

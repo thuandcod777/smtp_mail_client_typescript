@@ -17,5 +17,9 @@ export default interface IOtpRepository {
         success: boolean;
         message: string;
     }>;
+    logout(user_id: string): Promise<{
+        success: boolean;
+        message: string;
+    }>;
 }
 //# sourceMappingURL=iotp_repository.d.ts.map

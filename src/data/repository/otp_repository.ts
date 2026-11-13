@@ -1,7 +1,7 @@
 import type { ClientSession, Mongoose } from "mongoose";
 import type IOtpRepository from "../../domain/services/iotp_repository.js";
 import { OtpSchema, type IOtp } from "../model/otp_model.js";
-import { AuthSchema, type IAuthSession } from "../model/auth_model.js";
+import { AuthSchema, UserSchema, type IAuthSession, type IUser } from "../model/auth_model.js";
 
 export default class OtpRepository implements IOtpRepository {
     constructor(private readonly client: Mongoose) { }
@@ -66,15 +66,6 @@ export default class OtpRepository implements IOtpRepository {
         return { success: true, message: "Xóa mã otp thành công." };
     }
 
-    public async logout(user_id: string): Promise<{ success: boolean, message: string }> {
-        const sessionModel = this.client.model<IAuthSession>('Session', AuthSchema);
-        await sessionModel.updateOne({ user_id: user_id }, {
-            $set: {
-                is_active: false
-            }
-        })
 
-        return { success: true, message: "Đăng xuất thành công." };
-    }
 
 }

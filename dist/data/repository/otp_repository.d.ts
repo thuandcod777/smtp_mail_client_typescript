@@ -20,5 +20,9 @@ export default class OtpRepository implements IOtpRepository {
         success: boolean;
         message: string;
     }>;
+    logout(user_id: string): Promise<{
+        success: boolean;
+        message: string;
+    }>;
 }
 //# sourceMappingURL=otp_repository.d.ts.map

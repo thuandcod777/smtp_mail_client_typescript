@@ -5,7 +5,7 @@ import CompositisionRoot from './composition.js';
 dotenv.config()
 CompositisionRoot.configure()
 
-const PORT = 8080;
+const PORT = 8000;
 
 const app = express();
 

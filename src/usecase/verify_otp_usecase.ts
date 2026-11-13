@@ -4,8 +4,6 @@ import type { IOtpInputDto } from "../domain/dtos/otp-input.dto.js";
 import type IRedisService from "../domain/services/iredis_repository.js";
 import type IAuthRepository from "../domain/services/iauth_repository.js";
 import { TransactionFailure } from "../domain/error/transaction-failure.js";
-import { Contract } from "../domain/entities/contract.js";
-import jwt from "jsonwebtoken"
 
 
 export default class VerifyOtpUsecase {
@@ -15,7 +13,7 @@ export default class VerifyOtpUsecase {
 
         let token: string = "";
 
-        console.log('[VerifyOtpUsecase] Start verify OTP flow', { email: data.email, role: data.role });
+        console.log('[VerifyOtpUsecase] Start verify OTP flow', { email: data.email, roles: data.is_role });
         const isUserBlocked = await this.redisService.isBlocked(data.email);
         console.log('[VerifyOtpUsecase] Check user block status', { email: data.email, isUserBlocked });
 
@@ -29,15 +27,6 @@ export default class VerifyOtpUsecase {
         session.startTransaction();
 
         try {
-            console.log('[VerifyOtpUsecase] Transaction started');
-            const isOtpChecked = await this.otpRepository.verifyOtp(data.otp, session);
-            console.log('[VerifyOtpUsecase] Verify OTP result', isOtpChecked);
-
-            if (!isOtpChecked.success) {
-                console.warn('[VerifyOtpUsecase] OTP verification failed, recording failure');
-                await this.redisService.recordFailure(data.email);
-                throw new TransactionFailure(ResponseDto.failure(isOtpChecked.message));
-            }
 
             console.log('[VerifyOtpUsecase] Checking user account');
             const isUserChecked = await this.authRepository.checkUser(data.email, session);
@@ -46,6 +35,16 @@ export default class VerifyOtpUsecase {
             if (!isUserChecked.success || !isUserChecked.userData) {
                 console.error('[VerifyOtpUsecase] User check failed');
                 throw new TransactionFailure(ResponseDto.failure(isUserChecked.message));
+            }
+
+            console.log('[VerifyOtpUsecase] Transaction started');
+            const isOtpChecked = await this.otpRepository.verifyOtp(data.otp, session);
+            console.log('[VerifyOtpUsecase] Verify OTP result', isOtpChecked);
+
+            if (!isOtpChecked.success) {
+                console.warn('[VerifyOtpUsecase] OTP verification failed, recording failure');
+                await this.redisService.recordFailure(data.email);
+                throw new TransactionFailure(ResponseDto.failure(isOtpChecked.message));
             }
 
             console.log('[VerifyOtpUsecase] Checking user session');
@@ -73,8 +72,7 @@ export default class VerifyOtpUsecase {
                 throw new TransactionFailure(ResponseDto.failure("Phiên đăng nhập đang hoạt động."));
             }
 
-            if (data.role === 'cooperative') {
-
+            if (data.is_role === 'cooperative') {
                 token = isSessionChecked.data.refresh_token;
 
                 console.log('[VerifyOtpUsecase] Handling cooperative role');
@@ -93,8 +91,7 @@ export default class VerifyOtpUsecase {
                 }
 
 
-            } else if (data.role === 'client') {
-
+            } else if (data.is_role === 'client') {
                 token = isSessionChecked.data.access_token;
 
                 console.log('[VerifyOtpUsecase] Handling client role');

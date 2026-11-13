@@ -17,9 +17,11 @@ const UserSchema = z.object({
 export default class OtpController {
     saveOtpUsecase;
     verifyOtpUsecase;
-    constructor(saveOtpUsecase, verifyOtpUsecase) {
+    logoutUsecase;
+    constructor(saveOtpUsecase, verifyOtpUsecase, logoutUsecase) {
         this.saveOtpUsecase = saveOtpUsecase;
         this.verifyOtpUsecase = verifyOtpUsecase;
+        this.logoutUsecase = logoutUsecase;
     }
     async saveOtp(req, res) {
         try {
@@ -36,6 +38,20 @@ export default class OtpController {
         try {
             const safeOtpData = OtpModelSchema.parse(req.body);
             const result = await this.verifyOtpUsecase.execute(safeOtpData);
+            if (!result.success) {
+                return res.status(result.status).json({ data: { success: result.success, message: result.message } });
+            }
+            return res.status(result.status).json({ data: { session: result.data, success: result.success, message: result.message } });
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            return res.status(500).json({ error: errorMessage });
+        }
+    }
+    async logout(req, res) {
+        try {
+            const { email } = req.body;
+            const result = await this.logoutUsecase.execute(email);
             if (!result.success) {
                 return res.status(result.status).json({ data: { success: result.success, message: result.message } });
             }

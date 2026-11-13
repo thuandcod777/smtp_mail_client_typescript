@@ -12,45 +12,45 @@ export declare const AuthAuditSchema: mongoose.Schema<IAuthAudit, mongoose.Model
     _id: Types.ObjectId;
 } & {
     __v: number;
-}, "id"> & {
+}, "id"> & mongoose.HydratedDocumentOverrides<{
     id: string;
-}, {
+}>, {
     email?: mongoose.SchemaDefinitionProperty<string, IAuthAudit, mongoose.Document<unknown, {}, IAuthAudit, {
         id: string;
     }, mongoose.DefaultSchemaOptions> & Omit<IAuthAudit & {
         _id: Types.ObjectId;
     } & {
         __v: number;
-    }, "id"> & {
+    }, "id"> & mongoose.HydratedDocumentOverrides<{
         id: string;
-    }>;
+    }>>;
     ip_address?: mongoose.SchemaDefinitionProperty<string, IAuthAudit, mongoose.Document<unknown, {}, IAuthAudit, {
         id: string;
     }, mongoose.DefaultSchemaOptions> & Omit<IAuthAudit & {
         _id: Types.ObjectId;
     } & {
         __v: number;
-    }, "id"> & {
+    }, "id"> & mongoose.HydratedDocumentOverrides<{
         id: string;
-    }>;
+    }>>;
     user_agent?: mongoose.SchemaDefinitionProperty<string, IAuthAudit, mongoose.Document<unknown, {}, IAuthAudit, {
         id: string;
     }, mongoose.DefaultSchemaOptions> & Omit<IAuthAudit & {
         _id: Types.ObjectId;
     } & {
         __v: number;
-    }, "id"> & {
+    }, "id"> & mongoose.HydratedDocumentOverrides<{
         id: string;
-    }>;
+    }>>;
     action?: mongoose.SchemaDefinitionProperty<OTPAction, IAuthAudit, mongoose.Document<unknown, {}, IAuthAudit, {
         id: string;
     }, mongoose.DefaultSchemaOptions> & Omit<IAuthAudit & {
         _id: Types.ObjectId;
     } & {
         __v: number;
-    }, "id"> & {
+    }, "id"> & mongoose.HydratedDocumentOverrides<{
         id: string;
-    }>;
+    }>>;
 }, IAuthAudit>;
 export interface IAuthSession {
     user_id: Types.ObjectId;
@@ -65,54 +65,54 @@ export declare const AuthSchema: mongoose.Schema<IAuthSession, mongoose.Model<IA
     _id: Types.ObjectId;
 } & {
     __v: number;
-}, "id"> & {
+}, "id"> & mongoose.HydratedDocumentOverrides<{
     id: string;
-}, {
+}>, {
     user_id?: mongoose.SchemaDefinitionProperty<Types.ObjectId, IAuthSession, mongoose.Document<unknown, {}, IAuthSession, {
         id: string;
     }, mongoose.DefaultSchemaOptions> & Omit<IAuthSession & {
         _id: Types.ObjectId;
     } & {
         __v: number;
-    }, "id"> & {
+    }, "id"> & mongoose.HydratedDocumentOverrides<{
         id: string;
-    }>;
+    }>>;
     refresh_token?: mongoose.SchemaDefinitionProperty<string, IAuthSession, mongoose.Document<unknown, {}, IAuthSession, {
         id: string;
     }, mongoose.DefaultSchemaOptions> & Omit<IAuthSession & {
         _id: Types.ObjectId;
     } & {
         __v: number;
-    }, "id"> & {
+    }, "id"> & mongoose.HydratedDocumentOverrides<{
         id: string;
-    }>;
+    }>>;
     access_token?: mongoose.SchemaDefinitionProperty<string, IAuthSession, mongoose.Document<unknown, {}, IAuthSession, {
         id: string;
     }, mongoose.DefaultSchemaOptions> & Omit<IAuthSession & {
         _id: Types.ObjectId;
     } & {
         __v: number;
-    }, "id"> & {
+    }, "id"> & mongoose.HydratedDocumentOverrides<{
         id: string;
-    }>;
+    }>>;
     is_active?: mongoose.SchemaDefinitionProperty<boolean, IAuthSession, mongoose.Document<unknown, {}, IAuthSession, {
         id: string;
     }, mongoose.DefaultSchemaOptions> & Omit<IAuthSession & {
         _id: Types.ObjectId;
     } & {
         __v: number;
-    }, "id"> & {
+    }, "id"> & mongoose.HydratedDocumentOverrides<{
         id: string;
-    }>;
+    }>>;
     is_block?: mongoose.SchemaDefinitionProperty<boolean, IAuthSession, mongoose.Document<unknown, {}, IAuthSession, {
         id: string;
     }, mongoose.DefaultSchemaOptions> & Omit<IAuthSession & {
         _id: Types.ObjectId;
     } & {
         __v: number;
-    }, "id"> & {
+    }, "id"> & mongoose.HydratedDocumentOverrides<{
         id: string;
-    }>;
+    }>>;
 }, IAuthSession>;
 export interface IUser {
     name: string;
@@ -155,9 +155,9 @@ export declare const UserSchema: mongoose.Schema<any, mongoose.Model<any, any, a
     _id: Types.ObjectId;
 } & {
     __v: number;
-}, "id"> & {
+}, "id"> & mongoose.HydratedDocumentOverrides<{
     id: string;
-}, unknown, {
+}>, unknown, {
     email: string;
     types: string;
     roles: string;

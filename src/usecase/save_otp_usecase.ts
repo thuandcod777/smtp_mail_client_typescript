@@ -16,16 +16,17 @@ export default class SaveOtpUsecase {
     public async execute(userData: IUserInputDTO): Promise<ResponseDto> {
 
         let otp = '';
-        const uuid: string = uuidv4();
-
-        if (userData.roles === 'cooperative') {
+        /*         
+            const uuid: string = uuidv4();
+         */
+        if (userData.is_role === 'cooperative') {
             otp = generateRandomString(12);
-        } else if (userData.roles === 'client') {
+        } else if (userData.is_role === 'client') {
             otp = generateRandomString(6);
 
         }
 
-        console.log('[SaveOtpUsecase] OTP generated', { role: userData.roles, otpLength: otp.length, email: userData.email });
+        console.log('[SaveOtpUsecase] OTP generated', { roles: userData.is_role, otpLength: otp.length, email: userData.email });
 
         const session = await this.authRepository.startSession();
         session.startTransaction();
@@ -39,7 +40,7 @@ export default class SaveOtpUsecase {
 
             // Kiểm tra thành công và đảm bảo có dữ liệu người dùng
             if (isUserChecked.success && isUserChecked.userData) {
-                if (userData.roles === 'client') {
+                if (userData.is_role === 'client') {
                     console.log('[SaveOtpUsecase] Checking existing user session');
                     const isSessionChecked = await this.authRepository.checkUserSession(isUserChecked.userData._id!.toString(), session);
 
@@ -51,7 +52,7 @@ export default class SaveOtpUsecase {
 
                     if (!isSessionChecked.success || !isSessionChecked.data) {
                         console.log('[SaveOtpUsecase] Generating access token for client');
-                        const accessToken = this.tokenService.generateAccessToken(uuid);
+                        const accessToken = this.tokenService.generateAccessToken(isUserChecked.userData._id!.toString());
                         console.log('[SaveOtpUsecase] Access token generated');
 
                         console.log('[SaveOtpUsecase] Updating session with new access token');
@@ -106,7 +107,7 @@ export default class SaveOtpUsecase {
                         }
 
                         console.log('[SaveOtpUsecase] Generating access token');
-                        const accessToken = this.tokenService.generateAccessToken(uuid);
+                        const accessToken = this.tokenService.generateAccessToken(isUserChecked.userData._id!.toString());
 
                         console.log('[SaveOtpUsecase] Updating session with new access token');
                         const isSessionUpdated = await this.authRepository.updateSession(isUserChecked.userData._id!.toString(), null, accessToken.toString(), false, false, session);
@@ -149,7 +150,6 @@ export default class SaveOtpUsecase {
 
                     return ResponseDto.success("Gửi mã OTP thành công.");
 
-
                 } else {
                     throw new TransactionFailure(ResponseDto.failure('Tài khoản email đã được đăng ký'));
                 }
@@ -174,12 +174,12 @@ export default class SaveOtpUsecase {
             console.log('[SaveOtpUsecase] OTP saved');
 
 
-            console.log(`[SaveOtpUsecase] Processing role: ${userData.roles}`);
+            console.log(`[SaveOtpUsecase] Processing role: ${userData.is_role}`);
 
-            switch (userData.roles) {
+            switch (userData.is_role) {
                 case 'cooperative': {
                     console.log('[SaveOtpUsecase] Generating refresh token for cooperative');
-                    const refreshToken = this.tokenService.generateRefreshToken(uuid);
+                    const refreshToken = this.tokenService.generateRefreshToken(isUserCreated.userData!._id!.toString());
 
                     console.log('[SaveOtpUsecase] Updating session with refresh token');
                     const isSessionUpdated = await this.authRepository.updateSession(isUserCreated.userData!._id!.toString(), refreshToken.toString(), null, false, false, session)
@@ -203,7 +203,7 @@ export default class SaveOtpUsecase {
                 }
                 case 'client': {
                     console.log('[SaveOtpUsecase] Generating access token for client');
-                    const accessToken = this.tokenService.generateAccessToken(uuid);
+                    const accessToken = this.tokenService.generateAccessToken(isUserCreated.userData!._id!.toString());
                     console.log('[SaveOtpUsecase] Access token generated');
 
                     console.log('[SaveOtpUsecase] Updating session with client access token');

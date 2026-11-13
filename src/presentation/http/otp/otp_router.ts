@@ -9,7 +9,6 @@ import type IOtpRepository from "../../../domain/services/iotp_repository.js";
 import type IAuthRepository from "../../../domain/services/iauth_repository.js";
 import type ITokenService from "../../../domain/services/itoken_service.js";
 import type IRedisService from "../../../domain/services/iredis_repository.js";
-import LogoutUsecase from "../../../usecase/logout_usecase.js";
 
 export default class OtpRouter {
     public static configure(authRepository: IAuthRepository, otpRepository: IOtpRepository, mailerService: MailerService, tokenService: ITokenService, redisService: IRedisService): Router {
@@ -18,16 +17,14 @@ export default class OtpRouter {
         let controller = OtpRouter.composeController(authRepository, otpRepository, mailerService, tokenService, redisService);
 
         router.post('/sendmail', (req: Request, res: Response) => controller.saveOtp(req, res));
-        router.post('/verified', (req: Request, res: Response) => controller.verifyOtp(req, res));
-        router.post('/logout', (req: Request, res: Response) => controller.logout(req, res));
+        router.post('/verifiyemail', (req: Request, res: Response) => controller.verifyOtp(req, res));
         return router;
     }
 
     private static composeController(authRepository: IAuthRepository, otpRepository: IOtpRepository, mailerService: MailerService, tokenService: ITokenService, redisService: IRedisService): OtpController {
         const saveOtpUsecase = new SaveOtpUsecase(authRepository, otpRepository, mailerService, tokenService, redisService);
         const verifyOtpUsecase = new VerifyOtpUsecase(authRepository, otpRepository, redisService);
-        const logoutUsecase = new LogoutUsecase(otpRepository);
-        const controller = new OtpController(saveOtpUsecase, verifyOtpUsecase, logoutUsecase);
+        const controller = new OtpController(saveOtpUsecase, verifyOtpUsecase);
         return controller;
     }
 }

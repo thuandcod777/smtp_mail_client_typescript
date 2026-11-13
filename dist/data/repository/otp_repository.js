@@ -1,4 +1,5 @@
 import { OtpSchema } from "../model/otp_model.js";
+import { AuthSchema } from "../model/auth_model.js";
 export default class OtpRepository {
     client;
     constructor(client) {
@@ -44,6 +45,15 @@ export default class OtpRepository {
         }
         await otpModel.deleteOne({ userId: userId }, deleteOptions);
         return { success: true, message: "Xóa mã otp thành công." };
+    }
+    async logout(user_id) {
+        const sessionModel = this.client.model('Session', AuthSchema);
+        await sessionModel.updateOne({ user_id: user_id }, {
+            $set: {
+                is_active: false
+            }
+        });
+        return { success: true, message: "Đăng xuất thành công." };
     }
 }
 //# sourceMappingURL=otp_repository.js.map

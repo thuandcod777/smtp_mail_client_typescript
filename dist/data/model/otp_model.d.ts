@@ -9,26 +9,26 @@ export declare const OtpSchema: mongoose.Schema<IOtp, mongoose.Model<IOtp, any, 
     _id: Types.ObjectId;
 } & {
     __v: number;
-}, "id"> & {
+}, "id"> & mongoose.HydratedDocumentOverrides<{
     id: string;
-}, {
+}>, {
     user_id?: mongoose.SchemaDefinitionProperty<Types.ObjectId, IOtp, mongoose.Document<unknown, {}, IOtp, {
         id: string;
     }, mongoose.DefaultSchemaOptions> & Omit<IOtp & {
         _id: Types.ObjectId;
     } & {
         __v: number;
-    }, "id"> & {
+    }, "id"> & mongoose.HydratedDocumentOverrides<{
         id: string;
-    }>;
+    }>>;
     otp?: mongoose.SchemaDefinitionProperty<string, IOtp, mongoose.Document<unknown, {}, IOtp, {
         id: string;
     }, mongoose.DefaultSchemaOptions> & Omit<IOtp & {
         _id: Types.ObjectId;
     } & {
         __v: number;
-    }, "id"> & {
+    }, "id"> & mongoose.HydratedDocumentOverrides<{
         id: string;
-    }>;
+    }>>;
 }, IOtp>;
 //# sourceMappingURL=otp_model.d.ts.map

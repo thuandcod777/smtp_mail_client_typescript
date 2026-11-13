@@ -41,25 +41,27 @@ export const AuthSchema = new Schema<IAuthSession>({
 
 
 export interface IUser {
-    name: string;
+    user_name: string;
     email: string;
-    name_company: string;
+    company_name: string;
     number_phone: string;
-    types: string;
-    roles: string;
+    is_type: string;
+    is_role: string;
+    is_login: string;
 }
 
 export const UserSchema = new mongoose.Schema({
-    name: { type: String, default: null },
+    user_name: { type: String, default: null },
     email: {
         type: String,
         required: true,
         unique: true
     },
-    name_company: {
+    company_name: {
         type: String, default: null
     },
     number_phone: { type: String, default: null },
-    types: { type: String, required: true },
-    roles: { type: String, required: true },
+    is_type: { type: String, required: true },
+    is_role: { type: String, required: true },
+    is_login: { type: String, required: true }
 }, { _id: true, timestamps: true });

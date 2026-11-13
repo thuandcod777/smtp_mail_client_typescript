@@ -18,7 +18,8 @@ export default class CompositisionRoot {
         };
         const connectionStr = encodeURI(process.env.MONGO_DB);
         this.client.connect(connectionStr, options).then(() => console.log("Database connected!")).catch(err => console.log(err));
-        this.redisClient = createClient({ url: 'redis://localhost:6379' });
+        /* this.redisClient = createClient({ url: 'redis://tnh-redis-server:6379' }); */
+        this.redisClient = createClient({ url: 'redis://127.0.0.1:6379' });
         this.redisClient.on('error', (err) => console.log('Redis Client Error', err));
         try {
             await this.redisClient.connect();

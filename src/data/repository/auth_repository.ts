@@ -31,18 +31,48 @@ export default class AuthRepository implements IAuthRepository {
 
         const userData = User.fromJson({
             _id: user._id.toString(),
-            name: user.name ?? null,
-            name_company: user.name_company ?? null,
+            user_name: user.user_name ?? null,
+            company_name: user.company_name ?? null,
             email: user.email ?? null,
             number_phone: user.number_phone ?? null,
-            types: user.types,
-            roles: user.roles
+            is_type: user.is_type,
+            is_role: user.is_role,
+            is_login: user.is_login
         });
 
 
         return {
             success: true, userData: userData, message: "Tìm kiếm email thành công."
         };
+    }
+
+
+    public async getContract(userId: string, session?: ClientSession): Promise<{ success: boolean, contractData: Contract | null, message: string }> {
+        const contractModel = this.client.model<IContract>('Contract', ContractSchema);
+
+        const contractQuery = contractModel.findOne({ user_id: userId });
+
+        if (session) {
+            contractQuery.session(session);
+        }
+
+        const contract = await contractQuery.lean();
+
+        if (!contract) {
+            return { success: false, contractData: null, message: "Không tìm thấy thông tin hợp đồng." };
+        }
+
+        const contractData = Contract.fromJson({
+            user_id: contract.user_id.toString(),
+            contract_code: contract.contract_code,
+            step_contract: contract.step_contract,
+            contract_details: contract.contract_details,
+            scope: contract.scope,
+            contract_pdf: contract.contract_pdf,
+            is_success: contract.is_success
+        });
+
+        return { success: true, contractData: contractData, message: "Tìm thấy thông tin hợp đồng thành công." };
     }
 
     public async registerUser(userData: IUserInputDTO, session?: ClientSession): Promise<{ success: boolean, userData: User | null, message: string }> {
@@ -64,24 +94,26 @@ export default class AuthRepository implements IAuthRepository {
         const userModel = this.client.model<IUser>('User', UserSchema);
 
         const userQuery = new userModel({
-            name: userData.name ?? null,
             email: userData.email,
-            name_company: userData.name_company ?? null,
+            user_name: userData.user_name ?? null,
+            company_name: userData.company_name ?? null,
             number_phone: userData.number_phone ?? null,
-            types: userData.types,
-            roles: userData.roles,
+            is_type: userData.is_type,
+            is_role: userData.is_role,
+            is_login: userData.is_login
         });
 
         await userQuery.save({ session: session ? session : null });
 
         const createdUser: User = {
             _id: userQuery._id.toString(),
-            name: userQuery.name,
-            email: userQuery.email, // Đã sửa lỗi: trước đó bạn gán lầm userQuery.name vào email
-            name_company: userQuery.name_company,
+            user_name: userQuery.user_name,
+            email: userQuery.email,
+            company_name: userQuery.company_name,
             number_phone: userQuery.number_phone,
-            types: userQuery.types,
-            roles: userQuery.roles
+            is_type: userQuery.is_type,
+            is_role: userQuery.is_role,
+            is_login: userQuery.is_login
         };
 
         return {
@@ -187,34 +219,6 @@ export default class AuthRepository implements IAuthRepository {
         return { success: true, message: "Đã xóa phiên tài khoản cũ thành công." };
     }
 
-    public async getContract(userId: string, session?: ClientSession): Promise<{ success: boolean, contractData: Contract | null, message: string }> {
-        const contractModel = this.client.model<IContract>('Contract', ContractSchema);
-
-        const contractQuery = contractModel.findOne({ user_id: userId });
-
-        if (session) {
-            contractQuery.session(session);
-        }
-
-        const contract = await contractQuery.lean();
-
-        if (!contract) {
-            return { success: false, contractData: null, message: "Không tìm thấy thông tin hợp đồng." };
-        }
-
-        const contractData = Contract.fromJson({
-            user_id: contract.user_id.toString(),
-            contract_code: contract.contract_code,
-            step_contract: contract.step_contract,
-            contract_details: contract.contract_details,
-            scope: contract.scope,
-            contract_pdf: contract.contract_pdf,
-            is_success: contract.is_success
-        });
-
-        return { success: true, contractData: contractData, message: "Tìm thấy thông tin hợp đồng thành công." };
-    }
-
     public async audit_login_log(auditData: AuthModel): Promise<AuthModel> {
         const authModel = this.client.model<IAuthAudit>('Audit', AuthAuditSchema);
 
@@ -225,7 +229,7 @@ export default class AuthRepository implements IAuthRepository {
         return AuthModel.fromJson(raw);
     }
 
-    public async signOut(token: string, role: string): Promise<{ sucess: boolean; message: string; }> {
+    public async signOut(user_id: string): Promise<{ sucess: boolean; message: string; }> {
         const sessionModel = this.client.model<IAuthSession>("Session", AuthSchema);
 
 
@@ -237,15 +241,7 @@ export default class AuthRepository implements IAuthRepository {
             updateOptions.session = session;
         } */
 
-        let data = {};
-
-        if (role === 'client') {
-            data = { access_token: token };
-        } else if (role === 'cooperative') {
-            data = { refresh_token: token };
-        }
-
-        const sessionQuery = await sessionModel.findOneAndUpdate(data, {
+        const sessionQuery = await sessionModel.findOneAndUpdate({ user_id: user_id }, {
             $set: {
                 "is_active": false
             }
